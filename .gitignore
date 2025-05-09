@@ -4,6 +4,8 @@ npm-debug.log*
 # Dependency directories
 node_modules/
 
-# Environment variable files
-.env
+# Configuration file
 config.json
+
+# Dev commands
+commands/dev/
