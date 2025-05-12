@@ -7,5 +7,6 @@ node_modules/
 # Configuration file
 config.json
 
-# Dev commands
+# Dev
+dev/
 commands/dev/
