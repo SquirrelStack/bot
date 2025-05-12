@@ -36,12 +36,12 @@ for (const file of eventFiles) {
 }
 
 // Handle functions
-const functionsPath = path.join(__dirname, 'functions');
-const functionFiles = fs.readdirSync(functionsPath).filter(file => file.endsWith(".js"));
-for (const file of functionFiles) {
-	const filePath = path.join(functionsPath, file);
-	require(filePath);
-}
+//const functionsPath = path.join(__dirname, 'functions');
+//const functionFiles = fs.readdirSync(functionsPath).filter(file => file.endsWith(".js"));
+//for (const file of functionFiles) {
+//	const filePath = path.join(functionsPath, file);
+//	require(filePath);
+//}
 
 // Login
 client.login(token);
