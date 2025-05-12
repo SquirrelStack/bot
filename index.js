@@ -4,6 +4,16 @@ const { token } = require('./config.json');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
+// Handle buttons
+client.buttons = new Collection();
+const buttonsPath = path.join(__dirname, 'buttons');
+const buttonFiles = fs.readdirSync(buttonsPath).filter(file => file.endsWith('.js'));
+for (const file of buttonFiles) {
+	const filePath = path.join(buttonsPath, file);
+	const button = require(filePath);
+	client.buttons.set(button.data.name, button);
+}
+
 // Handle commands
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');

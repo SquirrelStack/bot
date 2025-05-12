@@ -61,11 +61,10 @@ module.exports = {
 			.setPlaceholder('Tell us about your brew, your Scryfall search terms, or interesting stats on EDHREC!')
 			.setRequired(true);
 
+		// Add inputs to the modal
 		const firstActionRow = new ActionRowBuilder().addComponents(brewNameInput);
 		const secondActionRow = new ActionRowBuilder().addComponents(brewLinkInput);
 		const thirdActionRow = new ActionRowBuilder().addComponents(brewInfoInput);
-
-		// Add inputs to the modal
 		modal.addComponents(firstActionRow, secondActionRow, thirdActionRow);
 
 		// Show modal
@@ -116,13 +115,14 @@ module.exports = {
 					.setCustomId('editBrew')
 					.setLabel('Edit')
 					.setStyle(ButtonStyle.Danger);
-
+				const editButtonActionRowComponent = new ActionRowBuilder().addComponents(editButtonComponent);
+				
 				// Create forum post
 				forum.threads.create({
 					name: `${interaction.member.displayName} - ${brewName}`,
 					message: ({
 						flags: MessageFlags.IsComponentsV2,
-						components: [containerComponent]
+						components: [containerComponent, editButtonActionRowComponent]
 					})
 				});
 
