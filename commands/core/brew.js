@@ -35,7 +35,7 @@ module.exports = {
 
 		// Create modal
 		const modal = new ModalBuilder()
-			.setCustomId(`brewModal-${interaction.user.id}`)
+			.setCustomId(`brewModal-${interaction.member.id}`)
 			.setTitle('Brew Forum Submission');
 
 		// Add components
