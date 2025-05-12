@@ -116,7 +116,7 @@ module.exports = {
 					.setLabel('Edit')
 					.setStyle(ButtonStyle.Danger);
 				const editButtonActionRowComponent = new ActionRowBuilder().addComponents(editButtonComponent);
-				
+
 				// Create forum post
 				forum.threads.create({
 					name: `${interaction.member.displayName} - ${brewName}`,
