@@ -1,23 +1,28 @@
 const { brewerRoleId, urlAllowlist } = require('../config.json');
 const {
-	ActionRowBuilder,
-	ContainerBuilder,
-	MessageFlags,
-	ModalBuilder,
-	SeparatorBuilder,
-	SeparatorSpacingSize,
-	TextDisplayBuilder,
-	TextInputBuilder,
-	TextInputStyle,
-	roleMention,
-	ButtonBuilder,
-	ButtonStyle
+    ActionRowBuilder,
+    ContainerBuilder,
+    MessageFlags,
+    ModalBuilder,
+    SeparatorBuilder,
+    SeparatorSpacingSize,
+    TextDisplayBuilder,
+    TextInputBuilder,
+    TextInputStyle,
+    roleMention,
+    ButtonBuilder,
+    ButtonStyle
 } = require('discord.js');
 
 module.exports = {
     data: { name: 'editBrew' },
     async execute(interaction, client) {
         const message = interaction.message;
+        const thread = interaction.channel;
+        if (!message || !thread) {
+            await interaction.reply({ content: 'There was an error editing this brew.', flags: MessageFlags.Ephemeral });
+            return;
+        }
 
         // Create modal
         const modal = new ModalBuilder()
@@ -104,6 +109,8 @@ module.exports = {
                 const editButtonActionRowComponent = new ActionRowBuilder().addComponents(editButtonComponent);
 
                 // Edit post
+                const threadName = `${interaction.member.displayName} - ${brewName}`
+                if (thread.name !== threadName) { thread.setName(threadName) };
                 message.edit({
                     flags: MessageFlags.IsComponentsV2,
                     components: [containerComponent, editButtonActionRowComponent]
