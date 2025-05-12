@@ -12,7 +12,7 @@ const {
 	roleMention,
 	ButtonBuilder,
 	ButtonStyle,
-	SectionBuilder
+	ChannelType
 } = require('discord.js');
 
 module.exports = {
@@ -22,6 +22,17 @@ module.exports = {
 		description: 'Create a new brew'
 	},
 	async execute(interaction) {
+
+		// Check for forum channel
+		const forum = interaction.guild.channels.cache.get(brewChannelId);
+		if (!forum || forum.type !== ChannelType.GuildForum) {
+			interaction.reply({
+				content: 'The specified forum channel for brews is missing or invalid - please contact the server administrators',
+				flags: MessageFlags.Ephemeral
+			});
+			return;
+		}
+
 		// Create modal
 		const modal = new ModalBuilder()
 			.setCustomId(`brewModal-${interaction.user.id}`)
@@ -70,6 +81,10 @@ module.exports = {
 				const brewLink = modalInteraction.fields.getTextInputValue('brewLinkInput');
 				const brewInfo = modalInteraction.fields.getTextInputValue('brewInfoInput');
 
+				// Set other constants
+				const brewSite = new URL(brewLink).hostname;
+				const role = roleMention(brewerRoleId);
+
 				// Check if link is on allowlist
 				const isDomainAllowed = urlAllowlist.some(allowedDomain => brewLink.toLowerCase().startsWith(allowedDomain.toLowerCase()));
 				if (!isDomainAllowed) {
@@ -81,44 +96,38 @@ module.exports = {
 					return;
 				}
 
-				// Get site name
-				const siteName = new URL(brewLink).hostname;
-
-				// Set role
-				const role = roleMention(brewerRoleId);
-
 				// Create message components
-				//const brewImageComponent = new MediaGalleryBuilder().addItems([{ media: { url: metadata.image } }]);
-				const brewTitleComponent = new TextDisplayBuilder().setContent(`# ${brewName}`);
-				const brewAuthorComponent = new TextDisplayBuilder().setContent(`Poster: ${interaction.member}`);
-				const brewLinkComponent = new TextDisplayBuilder().setContent(`**[View on ${siteName}](${brewLink})**`);
-				const brewButtonComponent = new ButtonBuilder()
-					.setLabel(`${siteName}`)
+				const titleComponent = new TextDisplayBuilder().setContent(`# ${brewName}`);
+				const authorComponent = new TextDisplayBuilder().setContent(`Poster: ${interaction.member}`);
+				const linkButtonComponent = new ButtonBuilder()
+					.setLabel(`View on ${brewSite}`)
 					.setStyle(ButtonStyle.Link)
-					.setURL(brewLink)
-				const sectionComponent = new SectionBuilder()
-					.addTextDisplayComponents(brewTitleComponent, brewAuthorComponent, brewLinkComponent)
-					.setButtonAccessory(brewButtonComponent)
-				const brewSeparatorComponent = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large);
-				const brewInfoComponent = new TextDisplayBuilder().setContent(brewInfo);
-				const brewMentionComponent = new TextDisplayBuilder().setContent(`\nTime to get to work ${role}!`);
-				const brewContainerComponent = new ContainerBuilder()
-					.addSectionComponents(sectionComponent)
-					.addSeparatorComponents(brewSeparatorComponent)
-					.addTextDisplayComponents(brewInfoComponent, brewMentionComponent)
+					.setURL(brewLink);
+				const linkButtonActionRowComponent = new ActionRowBuilder().addComponents(linkButtonComponent);
+				const separatorComponent = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large);
+				const infoComponent = new TextDisplayBuilder().setContent(brewInfo);
+				const mentionComponent = new TextDisplayBuilder().setContent(`\nTime to get to work ${role}!`);
+				const containerComponent = new ContainerBuilder()
+					.addTextDisplayComponents(titleComponent, authorComponent)
+					.addActionRowComponents(linkButtonActionRowComponent)
+					.addSeparatorComponents(separatorComponent)
+					.addTextDisplayComponents(infoComponent, mentionComponent);
+				const editButtonComponent = new ButtonBuilder()
+					.setCustomId('editBrew')
+					.setLabel('Edit')
+					.setStyle(ButtonStyle.Danger);
 
 				// Create forum post
-				const forum = interaction.guild.channels.cache.get(brewChannelId);
 				forum.threads.create({
 					name: `${interaction.member.displayName} - ${brewName}`,
 					message: ({
 						flags: MessageFlags.IsComponentsV2,
-						components: [brewContainerComponent]
+						components: [containerComponent]
 					})
 				});
 
 				modalInteraction.reply({
-					content: 'Your post has been created - Be sure to apply the appropriate tags to your post.',
+					content: 'Your post has been created - now go apply tags!',
 					flags: MessageFlags.Ephemeral
 				});
 			})
