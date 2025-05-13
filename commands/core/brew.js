@@ -1,5 +1,6 @@
 const { brewerRoleId, brewChannelId, urlAllowlist } = require('../../config.json');
 const {
+	SlashCommandBuilder,
 	ActionRowBuilder,
 	ContainerBuilder,
 	MessageFlags,
