@@ -16,11 +16,17 @@ const {
 
 module.exports = {
     data: { name: 'editBrew' },
-    async execute(interaction, client) {
+    async execute(interaction) {
         const message = interaction.message;
         const thread = interaction.channel;
         if (!message || !thread) {
-            await interaction.reply({ content: 'There was an error editing this brew.', flags: MessageFlags.Ephemeral });
+            await interaction.reply({ content: 'There was an error editing this post.', flags: MessageFlags.Ephemeral });
+            return;
+        }
+
+        // Confirm user is OP
+        if (!interaction.message.mentions.has(interaction.user.id)) {
+            await interaction.reply({ content: 'Only the original poster can edit this post.', flags: MessageFlags.Ephemeral });
             return;
         }
 
@@ -80,7 +86,7 @@ module.exports = {
                 if (!isDomainAllowed) {
                     const domainList = "```" + urlAllowlist.join("\n") + "```"
                     modalInteraction.reply({
-                        content: `To prevent abuse, SquirrelStack only allows links to preapproved sites. Please resubmit your brew using one of the following services:${domainList}\n**For your convenience, your brew info is below:**\n${brewInfo}`,
+                        content: `To prevent abuse, SquirrelStack only allows links to preapproved sites. Please resubmit using one of the following services:${domainList}\n**For your convenience, your brew info is below:**\n${brewInfo}`,
                         flags: MessageFlags.Ephemeral
                     });
                     return;
@@ -88,7 +94,7 @@ module.exports = {
 
                 // Create message components
                 const titleComponent = new TextDisplayBuilder().setContent(`# ${brewName}`);
-                const authorComponent = new TextDisplayBuilder().setContent(`Poster: ${interaction.member}`);
+                const authorComponent = new TextDisplayBuilder().setContent(`Poster: ${modalInteraction.member}`);
                 const linkButtonComponent = new ButtonBuilder()
                     .setLabel(`View on ${brewSite}`)
                     .setStyle(ButtonStyle.Link)
@@ -103,13 +109,13 @@ module.exports = {
                     .addSeparatorComponents(separatorComponent)
                     .addTextDisplayComponents(infoComponent, mentionComponent);
                 const editButtonComponent = new ButtonBuilder()
-                    .setCustomId('editBrew')
+                    .setCustomId(`editBrew`)
                     .setLabel('Edit')
                     .setStyle(ButtonStyle.Danger);
                 const editButtonActionRowComponent = new ActionRowBuilder().addComponents(editButtonComponent);
 
                 // Edit post
-                const threadName = `${interaction.member.displayName} - ${brewName}`
+                const threadName = `${modalInteraction.member.displayName} - ${brewName}`
                 if (thread.name !== threadName) { thread.setName(threadName) };
                 message.edit({
                     flags: MessageFlags.IsComponentsV2,

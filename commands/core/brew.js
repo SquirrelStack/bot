@@ -97,7 +97,7 @@ module.exports = {
 
 				// Create message components
 				const titleComponent = new TextDisplayBuilder().setContent(`# ${brewName}`);
-				const authorComponent = new TextDisplayBuilder().setContent(`Poster: ${interaction.member}`);
+				const authorComponent = new TextDisplayBuilder().setContent(`Poster: ${modalInteraction.member}`);
 				const linkButtonComponent = new ButtonBuilder()
 					.setLabel(`View on ${brewSite}`)
 					.setStyle(ButtonStyle.Link)
@@ -119,7 +119,7 @@ module.exports = {
 
 				// Create forum post
 				forum.threads.create({
-					name: `${interaction.member.displayName} - ${brewName}`,
+					name: `${modalInteraction.member.displayName} - ${brewName}`,
 					message: ({
 						flags: MessageFlags.IsComponentsV2,
 						components: [containerComponent, editButtonActionRowComponent]
