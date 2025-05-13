@@ -17,10 +17,9 @@ const {
 
 module.exports = {
 	category: 'core',
-	data: {
-		name: 'brew',
-		description: 'Create a new brew'
-	},
+	data: new SlashCommandBuilder()
+		.setName('brew')
+		.setDescription('Create a new brew'),
 	async execute(interaction) {
 
 		// Check for forum channel
