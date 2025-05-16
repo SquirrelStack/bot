@@ -72,7 +72,7 @@ module.exports = {
 		await interaction.showModal(modal);
 
 		// Wait for submission
-		const filter = (interaction) => interaction.customId === `brewModal-${interaction.member.id}`;
+		const filter = (interaction) => interaction.customId === `brewModal-${interaction.member.id}-${now}`;
 		interaction
 			.awaitModalSubmit({ filter, time: 600_000 })
 			.then((modalInteraction) => {
